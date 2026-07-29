@@ -1,5 +1,5 @@
 import express from 'express';
-import { createComment, getPullRequestFiles, prepareDiff } from './github.js';
+import { createComment, filterFiles, getPullRequestFiles, prepareDiff } from './github.js';
 import { summarize } from './ai.js';
 import { ENV } from './config/env.js';
 
@@ -33,9 +33,21 @@ app.post('/github-webhook', async (req, res) => {
 
   try {
     const files = await getPullRequestFiles(owner, repo, number);
-    console.log(files);
-    const diff = prepareDiff(files);
-    console.log(diff);
+    const filteredFiles = filterFiles(files);
+
+    if (filteredFiles.length === 0) {
+      await createComment(
+        owner,
+        repo,
+        number,
+        'W Pull Requeście nie wykryto zmian wymagających podsumowania (zmieniono wyłącznie pliki konfiguracyjne lub pomocnicze).',
+      );
+
+      return;
+    }
+
+    const diff = prepareDiff(filteredFiles);
+
     const summary = await summarize(diff);
     console.log(summary);
     await createComment(owner, repo, number, summary);
