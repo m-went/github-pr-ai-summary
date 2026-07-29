@@ -13,4 +13,5 @@ function getEnvVariable(key: string, required = true): string {
 export const ENV = {
   PORT: getEnvVariable('PORT'),
   GEMINI_API_KEY: getEnvVariable('GEMINI_API_KEY'),
+  GITHUB_TOKEN: getEnvVariable('GITHUB_TOKEN'),
 };

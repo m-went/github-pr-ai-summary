@@ -1,8 +1,11 @@
 import { Octokit } from '@octokit/rest';
 import { PullRequestFile } from './types/github.js';
 import { BINARY_EXTENSIONS, IGNORED_DIRECTORIES, IGNORED_FILES } from './config/ignoredFiles.js';
+import { ENV } from './config/env.js';
 
-const octokit = new Octokit();
+const octokit = new Octokit({
+  auth: ENV.GITHUB_TOKEN,
+});
 
 function isBinaryFile(filename: string) {
   return BINARY_EXTENSIONS.some((ext) => filename.toLowerCase().endsWith(ext));
